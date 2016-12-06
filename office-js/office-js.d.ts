@@ -1532,7 +1532,7 @@ declare namespace Office {
         }
         export interface ItemCompose extends Office.Item {
             body: Office.Body;
-            subject: any;
+            subject: Office.Subject;
             /**
              * Adds a file to a message as an attachment
              * @param uri The URI that provides the location of the file to attach to the message. The maximum length is 2048 characters
@@ -1556,37 +1556,17 @@ declare namespace Office {
              * @param callback The optional callback method
              */
             removeAttachmentAsync(attachmentIndex: string, option?: any, callback?: (result: AsyncResult) => void): void;
+            /**
+             * Asynchronously saves an item.
+             * @param options Any optional parameters or state data passed to the method
+             * @param callback The optional callback method
+             */                        
+            saveAsync(options?: OptionsBase, callback?: (result: AsyncResult) => void): void;
         }
-        export interface MessageCompose extends Office.Message {
-            attachments: Office.AttachmentDetails[];
-            body: Office.Body;
+        export interface MessageCompose extends ItemCompose {           
             bcc: Office.Recipients;
             cc: Office.Recipients;
-            subject: Office.Subject;
-            to: Office.Recipients;
-            /**
-             * Adds a file to a message as an attachment
-             * @param uri The URI that provides the location of the file to attach to the message. The maximum length is 2048 characters
-             * @param attachmentName The name of the attachment that is shown while the attachment is uploading. The maximum length is 255 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            addFileAttachmentAsync(uri: string, attachmentName: string, options?: any, callback?: (result: AsyncResult) => void): void;
-            /**
-             * Adds an Exchange item, such as a message, as an attachment to the message
-             * @param itemId The Exchange identifier of the item to attach. The maximum length is 100 characters
-             * @param attachmentName The name of the attachment that is shown while the attachment is uploading. The maximum length is 255 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            addItemAttachmentAsync(itemId: any, attachmentName: string, options?: any, callback?: (result: AsyncResult) => void): void;
-            /**
-             * Removes an attachment from a message
-             * @param attachmentIndex The index of the attachment to remove. The maximum length of the string is 100 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            removeAttachmentAsync(attachmentIndex: string, option?: any, callback?: (result: AsyncResult) => void): void;
+            to: Office.Recipients;            
         }
         export interface MessageRead extends Office.Message {
             cc: Office.EmailAddressDetails[];
@@ -1629,37 +1609,12 @@ declare namespace Office {
              */
             getRegExMatchesByName(name: string): string[];
         }
-        export interface AppointmentCompose extends Office.Appointment {
-            body: Office.Body;
+        export interface AppointmentCompose extends ItemCompose {
             end: Office.Time;
             location: Office.Location;
             optionalAttendees: Office.Recipients;
             requiredAttendees: Office.Recipients;
             start: Office.Time;
-            subject: Office.Subject;
-            /**
-             * Adds a file to an appointment as an attachment
-             * @param uri The URI that provides the location of the file to attach to the appointment. The maximum length is 2048 characters
-             * @param attachmentName The name of the attachment that is shown while the attachment is uploading. The maximum length is 255 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            addFileAttachmentAsync(uri: string, attachmentName: string, options?: any, callback?: (result: AsyncResult) => void): void;
-            /**
-             * Adds an Exchange item, such as a message, as an attachment to the appointment
-             * @param itemId The Exchange identifier of the item to attach. The maximum length is 100 characters
-             * @param attachmentName The name of the attachment that is shown while the attachment is uploading. The maximum length is 255 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            addItemAttachmentAsync(itemId: any, attachmentName: string, options?: any, callback?: (result: AsyncResult) => void): void;
-            /**
-             * Removes an attachment from a appointment
-             * @param attachmentIndex The index of the attachment to remove. The maximum length of the string is 100 characters
-             * @param options Any optional parameters or state data passed to the method
-             * @param callback The optional callback method
-             */
-            removeAttachmentAsync(attachmentIndex: string, option?: any, callback?: (result: AsyncResult) => void): void;
         }
         export interface AppointmentRead extends Office.Appointment {
             attachments: Office.AttachmentDetails[];
@@ -1878,6 +1833,12 @@ declare namespace Office {
          */
         getCallbackTokenAsync(callback?: (result: AsyncResult) => void, userContext?: any): void;
         /**
+         * Gets a string that contains a token used to get an attachment or item from an Exchange Server
+         * @param options Optional variable for optional parameters to pass to the method
+         * @param callback The method to call when the the token is retrieved 
+         */
+        getCallbackTokenAsync(options?: GetCallbackTokenOptions, callback?: (result: AsyncResult) => void): void;        
+        /**
          * Gets a token identifying the user and the app for Office
          * @param callback The optional method to call when the string is inserted
          * @param userContext Optional variable for any state data that is passed to the asynchronous method
@@ -1890,6 +1851,12 @@ declare namespace Office {
          * @param userContext Optional variable for any state data that is passed to the asynchronous method
          */
         makeEwsRequestAsync(data: any, callback?: (result: AsyncResult) => void, userContext?: any): void;
+    }
+    export interface OptionsBase {
+        asyncContext?: any;
+    }    
+    export interface GetCallbackTokenOptions extends OptionsBase{
+        isRest?: boolean;
     }
     export interface Message extends Item {
         conversationId: string;
